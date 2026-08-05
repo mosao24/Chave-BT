@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Torneio de Beach Tennis</title>
+  <style>
+    :root {
+      --primary: #00838f;
+      --accent: #ff6f00;
+      --bg: #f4f7f6;
+      --card-bg: #ffffff;
+    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+    h1, h2 { color: var(--primary); text-align: center; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    input[type="text"], input[type="number"] { width: calc(100% - 20px); padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px; }
+    button { width: 100%; background: var(--accent); color: white; border: none; padding: 12px; font-weight: bold; border-radius: 5px; cursor: pointer; }
+    button.secondary { background: var(--primary); }
+    .match-card { background: var(--card-bg); border-left: 5px solid var(--primary); padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
+    .team-row input { width: 50px; text-align: center; margin: 0; }
+    .winner { font-weight: bold; color: green; }
+    .winner-label { color: green; font-size: 0.9em; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Beach Tennis - Torneio Flex</h1>
+
+    <!-- Form de Inscrição -->
+    <div class="card">
+      <h2>Inscrição de Dupla</h2>
+      <input type="text" id="teamName" placeholder="Nome da Dupla (ex: Os Brutos)">
+      <input type="text" id="p1" placeholder="Jogador 1">
+      <input type="text" id="p2" placeholder="Jogador 2">
+      <button onclick="addTeamFromForm()">Cadastrar Dupla</button>
+    </div>
+
+    <!-- Painel de Controle -->
+    <div class="card">
+      <h2>Painel de Controle</h2>
+      <p>Total de Duplas: <strong id="teamCount">0</strong></p>
+      <button class="secondary" onclick="generateTournament()">Gerar Chaves do Torneio</button>
+    </div>
+
+    <!-- Exibição das Chaves -->
+    <h2>Chaveamento do Torneio</h2>
+    <div id="bracketsContainer"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function addTeamFromForm() {
+      const name = document.getElementById("teamName").value;
+      const p1 = document.getElementById("p1").value;
+      const p2 = document.getElementById("p2").value;
+      
+      if (!name || !p1 || !p2) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+      
+      registerTeam(name, p1, p2);
+      document.getElementById("teamCount").innerText = state.teams.length;
+      document.getElementById("teamName").value = "";
+      document.getElementById("p1").value = "";
+      document.getElementById("p2").value = "";
+    }
+  </script>
+</body>
+</html>
