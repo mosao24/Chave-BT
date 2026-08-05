@@ -111,3 +111,12 @@ function handleScoreSubmit(matchId) {
   }
   submitScore(matchId, scoreA, scoreB);
 }
+function resetTournament() {
+  if (confirm("Tem certeza que deseja apagar todas as duplas e chaves?")) {
+    state.teams = [];
+    state.matches = [];
+    document.getElementById("teamCount").innerText = "0";
+    document.getElementById("bracketsContainer").innerHTML = "";
+    alert("Torneio zerado com sucesso!");
+  }
+}
