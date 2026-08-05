@@ -3,74 +3,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestor de Torneio de Beach Tennis</title>
+  <title>Gestão de Torneio - Beach Tennis Solo</title>
   <style>
     :root {
-      --primary: #00838f;
-      --accent: #ff6f00;
-      --bg: #f4f7f6;
+      --bg-color: #f4f7f6;
       --card-bg: #ffffff;
+      --primary: #00838f;
+      --primary-hover: #005662;
+      --accent: #ff6f00;
+      --text: #2c3e50;
+      --border: #e0e0e0;
     }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
-    h1, h2 { color: var(--primary); text-align: center; }
-    .container { max-width: 600px; margin: 0 auto; }
-    .card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    input[type="text"], input[type="number"] { width: calc(100% - 20px); padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 5px; }
-    button { width: 100%; background: var(--accent); color: white; border: none; padding: 12px; font-weight: bold; border-radius: 5px; cursor: pointer; }
-    button.secondary { background: var(--primary); }
-    .match-card { background: var(--card-bg); border-left: 5px solid var(--primary); padding: 15px; margin-bottom: 15px; border-radius: 5px; }
-    .team-row { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
-    .team-row input { width: 50px; text-align: center; margin: 0; }
-    .winner { font-weight: bold; color: green; }
-    .winner-label { color: green; font-size: 0.9em; margin-top: 8px; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text); padding: 20px; }
+    
+    .container { max-width: 1000px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 30px; }
+    header h1 { color: var(--primary); font-size: 2rem; }
+    header p { color: #666; font-size: 0.95rem; margin-top: 5px; }
+
+    .card { background: var(--card-bg); border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    h2 { font-size: 1.25rem; color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; }
+
+    .form-group { display: flex; gap: 10px; margin-bottom: 15px; }
+    input[type="text"] { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+    button { background-color: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    button:hover { background-color: var(--primary-hover); }
+    button.btn-accent { background-color: var(--accent); }
+    button.btn-accent:hover { background-color: #e65100; }
+    button.btn-danger { background-color: #d32f2f; }
+    button.btn-danger:hover { background-color: #9a0007; }
+
+    .player-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .player-tag { background: #e0f7fa; color: #006064; padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .player-tag span { cursor: pointer; font-weight: bold; color: #c62828; }
+
+    .bracket-container { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; }
+    .round { flex: 1; min-width: 250px; }
+    .round h3 { text-align: center; font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
+
+    .match { background: #fafafa; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 15px; }
+    .match-player { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+    .match-player:first-child { border-bottom: 1px dashed var(--border); }
+    .match-player.winner { font-weight: bold; color: var(--primary); }
+    
+    .score-input { width: 45px; padding: 4px; text-align: center; border: 1px solid var(--border); border-radius: 4px; }
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+    .winner-box { text-align: center; padding: 20px; background: #fff8e1; border: 2px solid #ffe082; border-radius: 8px; margin-top: 20px; }
+    .winner-box h2 { color: #f57f17; border: none; margin: 0; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Beach Tennis - Torneio Flex</h1>
 
-    <!-- Form de Inscrição -->
-    <div class="card">
-      <h2>Inscrição de Dupla</h2>
-      <input type="text" id="teamName" placeholder="Nome da Dupla (ex: Os Brutos)">
-      <input type="text" id="p1" placeholder="Jogador 1">
-      <input type="text" id="p2" placeholder="Jogador 2">
-      <button onclick="addTeamFromForm()">Cadastrar Dupla</button>
+<div class="container">
+  <header>
+    <h1>🎾 Gestão de Torneio - Categoria Individual</h1>
+    <p>Agende seus jogos, insira os placares e acompanhe o chaveamento em tempo real.</p>
+  </header>
+
+  <!-- Cadastro de Jogadores -->
+  <section class="card" id="setup-section">
+    <h2>1. Participantes</h2>
+    <div class="form-group">
+      <input type="text" id="player-name" placeholder="Nome do jogador..." onkeypress="if(event.key === 'Enter') addPlayer()">
+      <button onclick="addPlayer()">Adicionar</button>
     </div>
-
-    <!-- Painel de Controle -->
-    <div class="card">
-      <h2>Painel de Controle</h2>
-      <p>Total de Duplas: <strong id="teamCount">0</strong></p>
-      <button class="secondary" onclick="generateTournament()">Gerar Chaves do Torneio</button>
-    <button onclick="resetTournament()" style="background: #c62828; margin-top: 10px;">
-  Zerar Torneio / Limpar Dados
-</button>
+    <div class="player-list" id="player-list"></div>
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <button class="btn-accent" onclick="generateBracket()">Gerar Chaveamento</button>
+      <button class="btn-danger" onclick="resetTournament()">Reiniciar Tudo</button>
     </div>
+  </section>
 
-    <!-- Exibição das Chaves -->
-    <h2>Chaveamento do Torneio</h2>
-    <div id="bracketsContainer"></div>
-  </div>
+  <!-- Chaveamento do Torneio -->
+  <section class="card">
+    <h2>2. Chaves e Partidas</h2>
+    <div class="bracket-container" id="bracket">
+      <p style="color: #888;">Adicione os jogadores acima e clique em "Gerar Chaveamento".</p>
+    </div>
+    <div id="winner-display"></div>
+  </section>
+</div>
 
-  <script src="app.js"></script>
-  <script>
-    function addTeamFromForm() {
-      const name = document.getElementById("teamName").value;
-      const p1 = document.getElementById("p1").value;
-      const p2 = document.getElementById("p2").value;
-      
-      if (!name || !p1 || !p2) {
-        alert("Preencha todos os campos!");
-        return;
-      }
-      
-      registerTeam(name, p1, p2);
-      document.getElementById("teamCount").innerText = state.teams.length;
-      document.getElementById("teamName").value = "";
-      document.getElementById("p1").value = "";
-      document.getElementById("p2").value = "";
+<script>
+  let players = JSON.parse(localStorage.getItem('bt_players')) || [];
+  let rounds = JSON.parse(localStorage.getItem('bt_rounds')) || [];
+
+  function saveState() {
+    localStorage.setItem('bt_players', JSON.stringify(players));
+    localStorage.setItem('bt_rounds', JSON.stringify(rounds));
+  }
+
+  function renderPlayers() {
+    const list = document.getElementById('player-list');
+    list.innerHTML = '';
+    players.forEach((p, index) => {
+      list.innerHTML += `
+        <div class="player-tag">
+          ${p}
+          <span onclick="removePlayer(${index})">&times;</span>
+        </div>
+      `;
+    });
+  }
+
+  function addPlayer() {
+    const input = document.getElementById('player-name');
+    const name = input.value.trim();
+    if (name && !players.includes(name)) {
+      players.push(name);
+      input.value = '';
+      saveState();
+      renderPlayers();
     }
-  </script>
+  }
+
+  function removePlayer(index) {
+    players.splice(index, 1);
+    saveState();
+    renderPlayers();
+  }
+
+  function generateBracket() {
+    if (players.length < 2) {
+      alert("É necessário pelo menos 2 jogadores para iniciar o torneio.");
+      return;
+    }
+
+    // Embaralha jogadores
+    let shuffled = [...players].sort(() => Math.random() - 0.5);
+    
+    // Completa com "BYE" se não for potência de 2
+    let bracketSize = 1;
+    while (bracketSize < shuffled.length) bracketSize *= 2;
+    while (shuffled.length < bracketSize) shuffled.push("BYE (Avança)");
+
+    rounds = [];
+    let firstRound = [];
+
+    for (let i = 0; i < shuffled.length; i += 2) {
+      let p1 = shuffled[i];
+      let p2 = shuffled[i+1];
+      
+      let match = {
+        id: `r1-m${i/2}`,
+        p1: p1,
+        p2: p2,
+        s1: p2 === "BYE (Avança)" ? 1 : 0,
+        s2: 0,
+        winner: p2 === "BYE (Avança)" ? p1 : null
+      };
+      firstRound.push(match);
+    }
+
+    rounds.push(firstRound);
+    
+    // Cria rodadas subsequentes vazias
+    let currentRoundMatches = firstRound.length;
+    let roundIndex = 2;
+    while (currentRoundMatches > 1) {
+      currentRoundMatches /= 2;
+      let nextRound = [];
+      for (let i = 0; i < currentRoundMatches; i++) {
+        nextRound.push({
+          id: `r${roundIndex}-m${i}`,
+          p1: "A definir",
+          p2: "A definir",
+          s1: 0,
+          s2: 0,
+          winner: null
+        });
+      }
+      rounds.push(nextRound);
+      roundIndex++;
+    }
+
+    updateNextRounds();
+    saveState();
+    renderBracket();
+  }
+
+  function updateNextRounds() {
+    for (let r = 0; r < rounds.length - 1; r++) {
+      for (let m = 0; m < rounds[r].length; m++) {
+        let match = rounds[r][m];
+        if (match.winner) {
+          let nextMatchIndex = Math.floor(m / 2);
+          let isP1 = m % 2 === 0;
+          if (isP1) {
+            rounds[r+1][nextMatchIndex].p1 = match.winner;
+          } else {
+            rounds[r+1][nextMatchIndex].p2 = match.winner;
+          }
+        }
+      }
+    }
+  }
+
+  function updateScore(rIndex, mIndex) {
+    let match = rounds[rIndex][mIndex];
+    let s1 = parseInt(document.getElementById(`s1-${rIndex}-${mIndex}`).value) || 0;
+    let s2 = parseInt(document.getElementById(`s2-${rIndex}-${mIndex}`).value) || 0;
+
+    if (match.p1 === "A definir" || match.p2 === "A definir") return;
+
+    match.s1 = s1;
+    match.s2 = s2;
+
+    if (s1 > s2) match.winner = match.p1;
+    else if (s2 > s1) match.winner = match.p2;
+    else match.winner = null;
+
+    updateNextRounds();
+    saveState();
+    renderBracket();
+  }
+
+  function renderBracket() {
+    const container = document.getElementById('bracket');
+    const winnerDisplay = document.getElementById('winner-display');
+    container.innerHTML = '';
+    winnerDisplay.innerHTML = '';
+
+    if (rounds.length === 0) {
+      container.innerHTML = '<p style="color: #888;">Adicione os jogadores acima e clique em "Gerar Chaveamento".</p>';
+      return;
+    }
+
+    rounds.forEach((round, rIndex) => {
+      let roundName = rIndex === rounds.length - 1 ? "Final" : (rIndex === rounds.length - 2 ? "Semifinal" : `Rodada ${rIndex + 1}`);
+      let html = `<div class="round"><h3>${roundName}</h3>`;
+
+      round.forEach((m, mIndex) => {
+        let isEditable = m.p1 !== "A definir" && m.p2 !== "A definir" && m.p1 !== "BYE (Avança)" && m.p2 !== "BYE (Avança)";
+        
+        html += `
+          <div class="match">
+            <div class="match-player ${m.winner === m.p1 ? 'winner' : ''}">
+              <span>${m.p1}</span>
+              ${isEditable ? `<input type="number" id="s1-${rIndex}-${mIndex}" class="score-input" value="${m.s1}" onchange="updateScore(${rIndex}, ${mIndex})">` : ''}
+            </div>
+            <div class="match-player ${m.winner === m.p2 ? 'winner' : ''}">
+              <span>${m.p2}</span>
+              ${isEditable ? `<input type="number" id="s2-${rIndex}-${mIndex}" class="score-input" value="${m.s2}" onchange="updateScore(${rIndex}, ${mIndex})">` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      container.innerHTML += html;
+    });
+
+    // Exibe Campeão
+    let finalMatch = rounds[rounds.length - 1][0];
+    if (finalMatch && finalMatch.winner) {
+      winnerDisplay.innerHTML = `
+        <div class="winner-box">
+          <h2>🏆 Campeão do Torneio: ${finalMatch.winner} 🏆</h2>
+        </div>
+      `;
+    }
+  }
+
+  function resetTournament() {
+    if (confirm("Tem certeza que deseja apagar todos os dados do torneio?")) {
+      players = [];
+      rounds = [];
+      localStorage.clear();
+      renderPlayers();
+      renderBracket();
+    }
+  }
+
+  // Inicialização
+  renderPlayers();
+  renderBracket();
+</script>
+
 </body>
 </html>
