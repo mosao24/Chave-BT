@@ -233,7 +233,7 @@
     }
 
     rounds.forEach((round, rIndex) => {
-      let roundName = rIndex === rounds.length - 1 ? "Final" : (rIndex === rounds.length - 2 ? "Semifinal" : `Rodada ${rIndex + 1}`);
+      let roundName = rIndex === rounds.length - 1 ? "FINAL" : (rIndex === rounds.length - 2 ? "Semifinal" : `Rodada ${rIndex + 1}`);
       let html = `<div class="round"><h3>${roundName}</h3>`;
 
       round.forEach((m, mIndex) => {
